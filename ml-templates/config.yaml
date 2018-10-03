@@ -116,7 +116,7 @@ spec:
       name: http
     spec:
       params:
-        name: "image"
+      - name: "image"
         type: "bytes"
       outFilter:
       - output
