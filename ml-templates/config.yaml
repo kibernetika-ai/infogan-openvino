@@ -40,7 +40,7 @@ spec:
       default_volume_mapping: true
   - name: openvino
     resources:
-    - name: worker
+    - name: converter
       replicas: 1
       restartPolicy: Never
       maxRestartCount: 0
