@@ -123,7 +123,7 @@ spec:
       outMimeType: "image/png"
       rawInput: true
       model: any
-      signature:
+      signature: ""
     default_volume_mapping: true
  volumes:
   - clusterStorage: '{{ .storage.value }}'
