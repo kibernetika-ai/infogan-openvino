@@ -1,0 +1,149 @@
+kind: MLApp
+metadata:
+  name: gan-image-similarity
+spec:
+  package_manager: pip3
+  default_mount_path: "/notebooks"
+  tasks:
+  - name: standalone
+    resources:
+    - name: worker
+      replicas: 1
+      restartPolicy: Never
+      maxRestartCount: 0
+      images:
+        gpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
+        cpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+      command: python train.py --worker --data_set "$DATA_DIR/**/*.jpg" --batch_size 64 --epoch 4 --openvino --limit_train 10
+      workdir: "$SRC_DIR"
+      resources:
+        accelerators:
+          gpu: 0
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 1000m
+          memory: 4Gi
+      default_volume_mapping: true
+    - name: eval
+      replicas: 1
+      restartPolicy: Never
+      maxRestartCount: 0
+      is_permanent: true
+      images:
+        gpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
+        cpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+      command: python train.py --eval
+      workdir: "$SRC_DIR"
+      port: 2222
+      default_volume_mapping: true
+  - name: openvino
+    resources:
+    - name: worker
+      replicas: 1
+      restartPolicy: Never
+      maxRestartCount: 0
+      allowFail: true
+      images:
+        gpu: "kuberlab/openvino:cpu-36"
+        cpu: "kuberlab/openvino:cpu-36"
+      command: cd $TRAINING_DIR/136/1538569385 && mo_tf.py --input_model frozen.pb --input_shape [1,64,64,3] --output output
+      workdir: "$TRAINING_DIR"
+      resources:
+        accelerators:
+          gpu: 0
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 4Gi
+    volumes:
+    - name: training
+  uix:
+  - name: jupyter
+    displayName: Jupyter
+    images:
+      gpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
+      cpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+    ports:
+    - port: 8888
+      targetPort: 8888
+      protocol: TCP
+      name: http
+    default_volume_mapping: true
+  - name: tensorboard
+    displayName: Tensorboard
+    command: "tensorboard --logdir=$TRAINING_DIR"
+    images:
+      cpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
+    ports:
+    - port: 6006
+      targetPort: 6006
+      protocol: TCP
+      name: http
+    volumes:
+    - name: training
+  serving:
+  - name: serving
+    displayName: Serving
+    images:
+      gpu: "kuberlab/serving:latest-openvino"
+      cpu: "kuberlab/serving:latest-openvino"
+    workdir: "$SRC_DIR"
+    command: "kuberlab-serving --port=9000 --driver openvino --model-path=$TRAINING_DIR/148/1538588860/frozen.xml --hooks hook.py"
+    resources:
+      accelerators:
+        gpu: 0
+      requests:
+        cpu: 100m
+        memory: 1Gi
+      limits:
+        cpu: 1000m
+        memory: 8Gi
+    ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
+      name: http
+    spec:
+      params:
+        name: "image"
+        type: "bytes"
+      outFilter:
+      - output
+      outMimeType: "image/png"
+      rawInput: true
+      model: any
+    default_volume_mapping: true
+ volumes:
+  - clusterStorage: '{{ .storage.value }}'
+    name: training
+  - gitRepo:
+      repository: {{ gitRepo .src.value }}
+      accountId: '{{ .src.accountId }}'
+      revision: '{{ .src.revision }}'
+    isLibDir: false
+    name: src
+    subPath: {{ gitSubPath .src.value }}
+  - clusterStorage: '{{ .storage.value }}'
+    isLibDir: true
+    name: lib
+  - clusterStorage: '{{ .storage.value }}'
+    mountPath: /notebooks
+    name: code
+    subPath: code
+  - isLibDir: false
+    name: data
+    datasetFS:
+      workspace: {{ .data.workspace }}
+      dataset: {{ .data.value }}
+      version: {{ .data.version }}

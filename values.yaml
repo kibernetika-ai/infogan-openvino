@@ -1,0 +1,22 @@
+storage:
+ value: default
+ wizard:
+   name: "Storage Configuration"
+   kind: cluster_storage
+
+
+src:
+  value: https://github.com/kibernetika-ai/infogan-openvino
+  accountId: ''
+  revision: ''
+  wizard:
+    name: "Source Code"
+    kind: git
+
+data:
+ value: 'zappos'
+ version: '1.0.0'
+ workspace: 'kuberlab-demo'
+ wizard:
+   name: "Image datasets"
+   kind: dataset

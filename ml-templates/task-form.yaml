@@ -1,0 +1,40 @@
+- name: use_gpu
+  label: Use gpu for training
+  default: false
+  type: boolean
+
+- name: data_set
+  default: $DATA_DIR/**/*.jpg
+  type: string
+  label: Training file pattern
+
+- name: openvino
+  label: Build OpenVino model
+  default: true
+  type: boolean
+
+- name: batch_size
+  type: int
+  default: 32
+  label: Batch size
+
+- name: epoch
+  type: int
+  default: 1
+  label: Number of epoch to train
+
+- name: limit_train
+  default: -1
+  type: int
+  label: Limit train dataset(For testing only)
+
+- name: discriminator_learning_rate
+  default: 2e-4
+  type: float
+  label: Discriminator learning rate
+
+- name: generator_learning_rate
+  default: 1e-3
+  type: float
+  label: Generator learning rate
+
