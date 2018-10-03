@@ -125,7 +125,7 @@ spec:
       model: any
       signature: ""
     default_volume_mapping: true
- volumes:
+  volumes:
   - clusterStorage: '{{ .storage.value }}'
     name: training
   - gitRepo:
