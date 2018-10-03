@@ -6,7 +6,7 @@ storage:
 
 
 src:
-  value: https://github.com/kibernetika-ai/infogan-openvino
+  value: https://github.com/kibernetika-ai/infogan-openvino/src
   accountId: ''
   revision: ''
   wizard:
