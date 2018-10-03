@@ -29,12 +29,12 @@
   label: Limit train dataset(For testing only)
 
 - name: discriminator_learning_rate
-  default: 2e-4
+  default: 0.0002
   type: float
   label: Discriminator learning rate
 
 - name: generator_learning_rate
-  default: 1e-3
+  default: 0.003
   type: float
   label: Generator learning rate
 

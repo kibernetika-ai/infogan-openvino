@@ -7,7 +7,7 @@ resources:
   images:
     gpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
     cpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
-  command: python train.py --worker --data_set "{{ .data_set }} --batch_size {{ .batch_size }} --epoch {{. epoch }} {{- if .openvino }} --openvino {{- end }} {{- if .limit_train }} --limit_train {{ .limit_train }} {{- end }} --discriminator_learning_rate {{ .discriminator_learning_rate }} --generator_learning_rate {{ .generator_learning_rate }}
+  command: python train.py --worker --data_set "{{ .data_set }} --batch_size {{ .batch_size }} --epoch {{ .epoch }} {{- if .openvino }} --openvino {{- end }} {{- if .limit_train }} --limit_train {{ .limit_train }} {{- end }} {{- if .discriminator_learning_rate }} --discriminator_learning_rate {{ .discriminator_learning_rate }} {{- end }} {{- if .generator_learning_rate }} --generator_learning_rate {{ .generator_learning_rate }} {{- end }}
   workdir: "$SRC_DIR"
   resources:
     {{- if .use_gpu }}
