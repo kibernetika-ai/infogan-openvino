@@ -5,8 +5,8 @@ resources:
   restartPolicy: Never
   maxRestartCount: 0
   images:
-    gpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
-    cpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+    gpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+    cpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
   command: python train.py --worker --data_set "{{ .data_set }}" --batch_size {{ .batch_size }} --epoch {{ .epoch }} {{- if .openvino }} --openvino {{- end }} {{- if .limit_train }} --limit_train {{ .limit_train }} {{- end }} {{- if .discriminator_learning_rate }} --discriminator_learning_rate {{ .discriminator_learning_rate }} {{- end }} {{- if .generator_learning_rate }} --generator_learning_rate {{ .generator_learning_rate }} {{- end }}
   workdir: "$SRC_DIR"
   resources:
@@ -27,9 +27,15 @@ resources:
   maxRestartCount: 0
   is_permanent: true
   images:
-    gpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
-    cpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+    gpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+    cpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
   command: python train.py --eval
   workdir: "$SRC_DIR"
-  port: 2222
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 4Gi
   default_volume_mapping: true
