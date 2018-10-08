@@ -59,8 +59,8 @@ spec:
         limits:
           cpu: 1000m
           memory: 4Gi
-    volumes:
-    - name: training
+      volumes:
+      - name: training
   uix:
   - name: jupyter
     displayName: Jupyter
