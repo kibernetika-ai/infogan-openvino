@@ -14,7 +14,7 @@ src:
     kind: git
 
 data:
- value: 'zappos'
+ value: 'shoes'
  version: '1.0.0'
  workspace: 'kuberlab-demo'
  wizard:

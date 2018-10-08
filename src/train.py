@@ -184,6 +184,11 @@ def freeze(exported_path, do_openvino=False):
     return out_path
 
 
+def catalog_ref(name, ctype, version):
+    return '#/{}/catalog/{}/{}/versions/{}'. \
+        format(os.environ.get('WORKSPACE_NAME'), ctype, name, version)
+
+
 def train(mode, checkpoint_dir, params):
     logging.info("start build  model")
 
@@ -246,6 +251,12 @@ def train(mode, checkpoint_dir, params):
         with open(export_path + '/features.pkl', 'wb') as output:
             pickle.dump(features, output, pickle.HIGHEST_PROTOCOL)
             pickle.dump(input_set, output, pickle.HIGHEST_PROTOCOL)
+
+        version = '1.{}.0'.format(os.environ['BUILD_ID'])
+        mlboard.model_upload('infogan-similarity', version, export_path)
+        client.update_task_info({'model': catalog_ref('infogan-similarity', 'mlmodel', version)})
+        logging.info("New model uploaded as 'infogan-similarity', version '%s'." % (version))
+
     elif mode == 'eval':
         train_fn = gan.null_dataset()
         train_spec = tf.estimator.TrainSpec(input_fn=train_fn)
