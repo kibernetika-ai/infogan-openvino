@@ -12,8 +12,8 @@ spec:
       restartPolicy: Never
       maxRestartCount: 0
       images:
-        gpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
-        cpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+        gpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+        cpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
       command: python train.py --worker --data_set "$DATA_DIR/**/*.jpg" --batch_size 64 --epoch 4 --openvino --limit_train 10
       workdir: "$SRC_DIR"
       resources:
@@ -32,8 +32,8 @@ spec:
       maxRestartCount: 0
       is_permanent: true
       images:
-        gpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
-        cpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+        gpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+        cpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
       command: python train.py --eval
       workdir: "$SRC_DIR"
       port: 2222
@@ -65,8 +65,8 @@ spec:
   - name: jupyter
     displayName: Jupyter
     images:
-      gpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
-      cpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+      gpu: "kuberlab/tensorflow:gpu-36-1.9.0-full"
+      cpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
     resources:
       requests:
         cpu: 100m
