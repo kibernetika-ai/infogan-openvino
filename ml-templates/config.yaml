@@ -36,6 +36,15 @@ spec:
         cpu: "kuberlab/tensorflow:cpu-36-1.9.0-full"
       command: python train.py --eval
       workdir: "$SRC_DIR"
+      resources:
+        accelerators:
+          gpu: 0
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 1000m
+          memory: 4Gi
       port: 2222
       default_volume_mapping: true
   - name: openvino

@@ -12,7 +12,7 @@ resources:
   resources:
     {{- if .use_gpu }}
     accelerators:
-      gpu: 0
+      gpu: 1
     {{- end }}
     requests:
       cpu: 100m
@@ -36,6 +36,6 @@ resources:
       cpu: 100m
       memory: 256Mi
     limits:
-      cpu: 1000m
+      cpu: 4000m
       memory: 4Gi
   default_volume_mapping: true
