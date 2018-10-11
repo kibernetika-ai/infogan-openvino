@@ -76,7 +76,7 @@ def input_fn(params, is_training):
 # full
 # input_length * stride - stride - kernel + 2
 def generator(z, latent_c, latent_d, mode):
-    training = (mode == tf.estimator.ModeKeys.TRAIN)
+    training = True#(mode == tf.estimator.ModeKeys.TRAIN)
     with tf.variable_scope("gen"):
         net = z
         if latent_c is not None:
@@ -191,7 +191,7 @@ def model_fn(features, labels, mode, params=None, config=None, model_dir=None):
                 d_real)}
         loss = None
     elif mode == tf.estimator.ModeKeys.EVAL:
-        z = tf.zeros([D_DIM * 10, Z_DIM], tf.float32)
+        z = tf.random_uniform([D_DIM * 10, Z_DIM], maxval=1., minval=0., dtype=tf.float32)
         tmp1 = np.zeros((D_DIM * 10, C_DIM), dtype=np.float32)
         for k in range(D_DIM):
             tmp1[k * 10:(k + 1) * 10, 0] = np.linspace(-2, 2, 10)
