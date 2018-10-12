@@ -76,7 +76,7 @@ def input_fn(params, is_training):
 # full
 # input_length * stride - stride - kernel + 2
 def generator(z, latent_c, latent_d, mode):
-    training = True#(mode == tf.estimator.ModeKeys.TRAIN)
+    training = (mode == tf.estimator.ModeKeys.TRAIN)
     with tf.variable_scope("gen"):
         net = z
         if latent_c is not None:
@@ -268,19 +268,20 @@ def model_fn(features, labels, mode, params=None, config=None, model_dir=None):
 
         d_loss = d_loss_a + q_loss_c + 1.0 * q_loss_d
         tf.summary.scalar('d_loss', d_loss)
-
-        d_trainer = tf.train.AdamOptimizer(params['discriminator_learning_rate'], beta1=.5).minimize(
-            d_loss, global_step=global_step,
-            var_list=[v for v in t_vars if 'discr/' in v.name or 'latent_c/' in v.name])
+        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        with tf.control_dependencies(update_ops):
+            d_trainer = tf.train.AdamOptimizer(params['discriminator_learning_rate'], beta1=.5).minimize(
+                d_loss, global_step=global_step,
+                var_list=[v for v in t_vars if 'discr/' in v.name or 'latent_c/' in v.name])
 
         g_loss_a = -tf.reduce_mean(tf.log(d_fake + TINY))
         tf.summary.scalar('g_loss_a', g_loss_a)
 
         g_loss = g_loss_a + 1 * q_loss_c + 1.0 * q_loss_d
         tf.summary.scalar('g_loss', g_loss)
-        g_trainer = tf.train.AdamOptimizer(params['generator_learning_rate'], beta1=.5).minimize(
-            g_loss,
-            var_list=[v for v in t_vars if 'gen/' in v.name])
+        with tf.control_dependencies(update_ops):
+            g_trainer = tf.train.AdamOptimizer(params['generator_learning_rate'], beta1=.5).minimize(
+                g_loss, var_list=[v for v in t_vars if 'gen/' in v.name])
 
         training_hooks = [UpdateGeneratorHook(g_trainer)]
         loss = d_loss + g_loss
