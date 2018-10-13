@@ -113,9 +113,9 @@ def discriminator(input, reuse, mode, global_step, dropout=None, d_dim=0, c_dim=
     training = (mode == tf.estimator.ModeKeys.TRAIN)
     with tf.variable_scope("discr", reuse=reuse):
         def _noise(net):
-            if training:
-                sigma = 0.2 / (tf.cast(global_step, tf.float32)/float(noise_level)+1.0)
-                return net + tf.random_normal(shape=net.shape, mean=0.0, stddev=sigma, dtype=tf.float32)
+            #if training:
+            #    sigma = 0.2 / (tf.cast(global_step, tf.float32)/float(noise_level)+1.0)
+            #    return net + tf.random_normal(shape=net.shape, mean=0.0, stddev=sigma, dtype=tf.float32)
             return net
 
         def _dropout(net):
@@ -282,7 +282,7 @@ def model_fn(features, labels, mode, params=None, config=None, model_dir=None):
         tf.summary.scalar('g_loss', g_loss)
         with tf.control_dependencies(update_ops):
             g_trainer = tf.train.AdamOptimizer(params['generator_learning_rate'], beta1=.5).minimize(
-                g_loss, var_list=[v for v in t_vars if 'gen/' in v.name])
+                g_loss, var_list=[v for v in t_vars if 'gen/' in v.name or 'latent_c/' in v.name])
 
         training_hooks = [UpdateGeneratorHook(g_trainer)]
         loss = d_loss + g_loss
