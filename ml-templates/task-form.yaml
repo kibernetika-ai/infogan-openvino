@@ -43,4 +43,9 @@
   type: int
   label: Noise Level
 
+- name: dropout
+  value: 0.5
+  type: float
+  label: Descriminator dropout
+
 
