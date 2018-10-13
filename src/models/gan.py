@@ -195,7 +195,7 @@ def model_fn(features, labels, mode, params=None, config=None, model_dir=None):
         z = tf.zeros([D_DIM * 10, Z_DIM], dtype=tf.float32)
         tmp1 = np.zeros((D_DIM * 10, C_DIM), dtype=np.float32)
         for k in range(D_DIM):
-            tmp1[k * 10:(k + 1) * 10, 0] = np.linspace(-1, 1, 10)
+            tmp1[k * 10:(k + 1) * 10, 0] = np.linspace(-2, 2, 10)
         tmp2 = np.zeros((D_DIM * 10, D_DIM), dtype=np.float32)
         for k in range(D_DIM):
             tmp2[k * 10:(k + 1) * 10, k] = 1
