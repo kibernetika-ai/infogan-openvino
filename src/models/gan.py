@@ -109,12 +109,12 @@ def generator(z, latent_c, latent_d, mode):
             return img
 
 
-def discriminator(input, reuse, mode, global_step, dropout=None, d_dim=0, c_dim=0):
+def discriminator(input, reuse, mode, global_step, dropout=None, d_dim=0, c_dim=0,noise_level=100):
     training = (mode == tf.estimator.ModeKeys.TRAIN)
     with tf.variable_scope("discr", reuse=reuse):
         def _noise(net):
             if training:
-                sigma = tf.log(4.0) * 0.2 / tf.log(4.0 + tf.cast(global_step, tf.float32) / 100.0)
+                sigma = 0.2 / (tf.cast(global_step, tf.float32)/float(noise_level)+1.0)
                 return net + tf.random_normal(shape=net.shape, mean=0.0, stddev=sigma, dtype=tf.float32)
             return net
 
@@ -191,7 +191,8 @@ def model_fn(features, labels, mode, params=None, config=None, model_dir=None):
                 d_real)}
         loss = None
     elif mode == tf.estimator.ModeKeys.EVAL:
-        z = tf.random_uniform([D_DIM * 10, Z_DIM], maxval=1., minval=0., dtype=tf.float32)
+        #z = tf.random_uniform([D_DIM * 10, Z_DIM], maxval=1., minval=0., dtype=tf.float32)
+        z = tf.zeros([D_DIM * 10, Z_DIM], dtype=tf.float32)
         tmp1 = np.zeros((D_DIM * 10, C_DIM), dtype=np.float32)
         for k in range(D_DIM):
             tmp1[k * 10:(k + 1) * 10, 0] = np.linspace(-2, 2, 10)
@@ -221,7 +222,7 @@ def model_fn(features, labels, mode, params=None, config=None, model_dir=None):
             summary_op=tf.summary.merge_all())
         evaluation_hooks.append(eval_summary_hook)
     else:
-        d_real = discriminator(features, False, mode, global_step, dropout=params['dropout'], c_dim=None, d_dim=None)
+        d_real = discriminator(features, False, mode, global_step, dropout=params['dropout'], c_dim=None, d_dim=None,noise_level=params['noise_level'])
         z = tf.random_uniform([params['batch_size'], Z_DIM], maxval=1., minval=0., dtype=tf.float32)
         latent_c = tf.random_normal([params['batch_size'], C_DIM], dtype=tf.float32) * 0.5 if C_DIM > 0 else None
         if D_DIM > 0:
@@ -236,7 +237,7 @@ def model_fn(features, labels, mode, params=None, config=None, model_dir=None):
             latent_d = None
         g_fake = generator(z, latent_c, latent_d, mode)
         d_fake, q_c, q_d = discriminator(g_fake, True, mode, global_step, dropout=params['dropout'], c_dim=C_DIM,
-                                         d_dim=D_DIM)
+                                         d_dim=D_DIM,noise_level=params['noise_level'])
 
         t_vars = tf.trainable_variables()
         logging.info('tvars: {}'.format(t_vars))

@@ -62,6 +62,12 @@ def parse_args():
         help='Drop out to use',
     )
     parser.add_argument(
+        '--noise_level',
+        type=int,
+        default=100,
+        help='Noise level to add to descriminator during training.',
+    )
+    parser.add_argument(
         '--epoch',
         type=int,
         default=1,
@@ -303,7 +309,8 @@ def main():
         'epoch': args.epoch,
         'dropout': args.dropout,
         'openvino': args.openvino,
-        'limit_train': args.limit_train
+        'limit_train': args.limit_train,
+        'noise_level': args.noise_level
     }
 
     if not tf.gfile.Exists(checkpoint_dir):

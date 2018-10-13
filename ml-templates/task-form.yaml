@@ -38,3 +38,9 @@
   type: float
   label: Generator learning rate
 
+- name: noise_level
+  value: 100
+  type: int
+  label: Noise Level
+
+
