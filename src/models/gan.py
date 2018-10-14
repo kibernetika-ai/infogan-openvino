@@ -113,13 +113,14 @@ def discriminator(input, reuse, mode, global_step, dropout=None, d_dim=0, c_dim=
     training = (mode == tf.estimator.ModeKeys.TRAIN)
     with tf.variable_scope("discr", reuse=reuse):
         def _noise(net):
-            #if training:
-            #    sigma = 0.2 / (tf.cast(global_step, tf.float32)/float(noise_level)+1.0)
-            #    return net + tf.random_normal(shape=net.shape, mean=0.0, stddev=sigma, dtype=tf.float32)
-            return net
+            if training and noise_level>0:
+                sigma = 0.2 / (tf.cast(global_step, tf.float32)/float(noise_level)+1.0)
+                return net + tf.random_normal(shape=net.shape, mean=0.0, stddev=sigma, dtype=tf.float32)
+            else:
+                return net
 
         def _dropout(net):
-            if training and dropout is not None:
+            if training and dropout is not None and dropout>0:
                 return tf.layers.dropout(net, dropout, name='dropout')
             return net
 
