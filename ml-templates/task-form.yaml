@@ -15,7 +15,7 @@
 
 - name: batch_size
   type: int
-  value: 32
+  value: 64
   label: Batch size
 
 - name: epoch
@@ -44,7 +44,7 @@
   label: Noise Level
 
 - name: dropout
-  value: 0.5
+  value: 0
   type: float
   label: Descriminator dropout
 
