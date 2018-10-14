@@ -84,16 +84,16 @@ def generator(z, latent_c, latent_d, mode):
         if latent_d is not None:
             net = tf.concat([net, latent_d], axis=1)
 
-        net = tf.layers.dense(net, 1024)
+        #net = tf.layers.dense(net, 1024)
+        #net = tf.layers.batch_normalization(net, training=training)
+        #net = tf.nn.relu(net)
+        #logging.info('GShape Dense 1 {}'.format(net.shape))
+        net = tf.layers.dense(net, 2 * 2 * 1024)
         net = tf.layers.batch_normalization(net, training=training)
         net = tf.nn.relu(net)
+        net = tf.reshape(net, [-1, 2, 2, 1024])
         logging.info('GShape Dense 1 {}'.format(net.shape))
-        net = tf.layers.dense(net, 4 * 4 * 128)
-        net = tf.layers.batch_normalization(net, training=training)
-        net = tf.nn.relu(net)
-        net = tf.reshape(net, [-1, 4, 4, 128])
-        logging.info('GShape Dense 2 {}'.format(net.shape))
-        conv = [64, 32, 16]
+        conv = [1024, 512, 256,128]
         for i, f in enumerate(conv):
             net = tf.layers.conv2d_transpose(net, f, 3, strides=(2, 2), padding='same')
             net = tf.layers.batch_normalization(net, training=training)
@@ -126,11 +126,11 @@ def discriminator(input, reuse, mode, global_step, dropout=None, d_dim=0, c_dim=
 
         logging.info('DShape Input {}'.format(input.shape))
         # [64x64]->[32,32]
-        convs = [64, 128, 256]
+        convs = [128, 256, 512,1024]
         net = _noise(input)
-        net = tf.layers.conv2d(net, 64, 3, strides=(2, 2), padding='same', reuse=reuse, name='conv{}'.format(0))
-        net = tf.nn.leaky_relu(net, alpha=0.1)
-        logging.info('DShape Conv{} {}'.format(0, input.shape))
+        #net = tf.layers.conv2d(net, 64, 3, strides=(2, 2), padding='same', reuse=reuse, name='conv{}'.format(0))
+        #net = tf.nn.leaky_relu(net, alpha=0.1)
+        #logging.info('DShape Conv{} {}'.format(0, input.shape))
         for i, f in enumerate(convs):
             net = tf.layers.conv2d(net, f, 3, strides=(2, 2), padding='same', reuse=reuse, name='conv{}'.format(i + 1))
             net = tf.layers.batch_normalization(net, training=training, name='conv{}_norm'.format(i + 1))
