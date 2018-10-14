@@ -84,15 +84,15 @@ def generator(z, latent_c, latent_d, mode):
         if latent_d is not None:
             net = tf.concat([net, latent_d], axis=1)
 
-        #net = tf.layers.dense(net, 1024)
-        #net = tf.layers.batch_normalization(net, training=training)
-        #net = tf.nn.relu(net)
-        #logging.info('GShape Dense 1 {}'.format(net.shape))
-        net = tf.layers.dense(net, 2 * 2 * 1024)
+        net = tf.layers.dense(net, 1024)
         net = tf.layers.batch_normalization(net, training=training)
         net = tf.nn.relu(net)
-        net = tf.reshape(net, [-1, 2, 2, 1024])
         logging.info('GShape Dense 1 {}'.format(net.shape))
+        net = tf.layers.dense(net, 2 * 2 * 4096)
+        net = tf.layers.batch_normalization(net, training=training)
+        net = tf.nn.relu(net)
+        net = tf.reshape(net, [-1, 2, 2, 4096])
+        logging.info('GShape Dense 2 {}'.format(net.shape))
         conv = [1024, 512, 256,128]
         for i, f in enumerate(conv):
             net = tf.layers.conv2d_transpose(net, f, 3, strides=(2, 2), padding='same')
