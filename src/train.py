@@ -100,7 +100,7 @@ def parse_args():
     parser.add_argument(
         '--log_step_count_steps',
         type=int,
-        default=100,
+        default=10,
         help='The frequency, in number of global steps, that the global step/sec and the loss will be logged during training.',
     )
     parser.add_argument(
