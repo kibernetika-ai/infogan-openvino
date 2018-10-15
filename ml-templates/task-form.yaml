@@ -39,7 +39,7 @@
   label: Generator learning rate
 
 - name: noise_level
-  value: 100
+  value: 500
   type: int
   label: Noise Level
 
