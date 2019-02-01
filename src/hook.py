@@ -4,6 +4,8 @@ import io
 import numpy as np
 import pickle
 import os
+import base64
+import json
 
 LOG = logging.getLogger(__name__)
 
@@ -36,7 +38,7 @@ def preprocess(inputs,**kwargs):
     images = inputs['image']
     batch = []
     for image in images:
-        image = PIL.Image.open(io.BytesIO(image))
+        image = PIL.Image.open(io.BytesIO(image)).convert("RGB")
         image = image.resize((64,64))
         image = np.asarray(image)
         image = image / 127.5 - 1
@@ -64,14 +66,28 @@ def postprocess(outputs,**kwargs):
         p = np.sum((all_features-o)**2,axis=1)
         indexes = p.argsort()[0:min(len(all_features),10)]
         x = 0
+        table = []
         for i in indexes:
             im_file = all_paths[i]
-            image = PIL.Image.open(im_file)
+            image = PIL.Image.open(im_file).convert("RGB")
             image = image.resize((64,64))
+            image_bytes = io.BytesIO()
+            image.save(image_bytes, format='JPEG', quality=80)
+            b_val = image_bytes.getvalue()
+            encoded = base64.encodebytes(image).decode()
             new_im.paste(image, (x,y))
+            table.append(
+                {
+                    'type': 'shoes',
+                    'name': im_file,
+                    'prob': 1.0,
+                    'image': encoded
+                }
+            )
             x += 64
         y+=64
     with io.BytesIO() as output:
         new_im.save(output,format='PNG')
         contents = output.getvalue()
-    return {'output':contents}
+    table = json.dumps(table)
+    return {'output':contents,'table_output':table}
