@@ -80,7 +80,7 @@ def postprocess(outputs,**kwargs):
                 {
                     'type': 'shoes',
                     'name': im_file,
-                    'prob': 1.0,
+                    'prob': float(p[i]),
                     'image': encoded
                 }
             )
