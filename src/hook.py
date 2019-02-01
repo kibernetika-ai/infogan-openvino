@@ -74,7 +74,7 @@ def postprocess(outputs,**kwargs):
             image_bytes = io.BytesIO()
             image.save(image_bytes, format='JPEG', quality=80)
             b_val = image_bytes.getvalue()
-            encoded = base64.encodebytes(image).decode()
+            encoded = base64.encodebytes(b_val).decode()
             new_im.paste(image, (x,y))
             table.append(
                 {
